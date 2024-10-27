@@ -14,11 +14,11 @@ The following libraries are required for compilation and execution:
 
 1. WebSocketpp: For handling WebSocket connections.
 2. Boost: Required by WebSocket++ for various utilities.
-3. RapidJSON: For fast JSON parsing and serialization.
+3. RapidJSON: For fast JSON parsing and serialization of the response messages.
 4. OpenSSL: For establishing secure connections using SSL/TLS.
 5. pthread: Provides multi-threading support in C++.
 
 Websocketpp is a header only library, so git clone the repository. Install other libraries and compile trade.cpp as:
-g++-13 -std=c++11 -I path/to/websocketpp -I /path/to/boost/include -I /path/to/rapidjson/include -I /path/to/openssl@3/include -L/path/to/openssl@3/lib -lssl -lcrypto -lpthread trade.cpp
+```g++-13 -std=c++11 -I path/to/websocketpp -I /path/to/boost/include -I /path/to/rapidjson/include -I /path/to/openssl@3/include -L/path/to/openssl@3/lib -lssl -lcrypto -lpthread trade.cpp```
 
-A menu is printed to the terminal which shows us the available option. Run ```tail -f output.txt``` in another terminal instance to view the reply messages.
+A menu is printed to the terminal which shows us the available option. Run ```tail -f output.txt``` in another terminal instance to view the reply messages. In case any error is encountered, the error is printed in the main terminal and detailed response is present in the other terminal.

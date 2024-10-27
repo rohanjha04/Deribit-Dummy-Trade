@@ -10,9 +10,10 @@
 #include <atomic>
 #include <fstream>
 
-std::ofstream log_file("output.txt");
+std::ofstream log_file("output.txt"); // Log file to store response messages
 
 typedef websocketpp::client<websocketpp::config::asio_tls_client> client;
+//Define the client_id and client_secret for authentication. Test network credentials are used here, ideally should not be pushed to a public repository but eh, it's a test network.
 std::string client_id = "OJMM9Ih_";
 std::string client_secret = "XtDofirmP_zUNuqTjGrktCJgD80aEjzefh5s5BMJU2s";
 
@@ -23,7 +24,7 @@ private:
     std::string uri;
     std::atomic<bool> is_connected; // Thread-safe flag to check connection status
 public:
-    WebSocketClient(const std::string &uri) : uri(uri), is_connected(false) {
+    WebSocketClient(const std::string &uri) : uri(uri), is_connected(false) { // Constructor
         ws_client.init_asio();
         ws_client.set_tls_init_handler([this](websocketpp::connection_hdl) {
             return std::make_shared<websocketpp::lib::asio::ssl::context>(websocketpp::lib::asio::ssl::context::tlsv12);
@@ -59,7 +60,7 @@ public:
         ws_client.run();
     }
 
-    // void send_json(const rapidjson::Document &json_data) {
+    // void send_json(const rapidjson::Document &json_data) { // Send JSON data if required
     void send_json(const std::string &json_data) {
         if (!is_connected) {
             std::cerr << "Cannot send message, not connected." << std::endl;
@@ -69,7 +70,7 @@ public:
         }
 
         websocketpp::lib::error_code ec;
-
+        //Uncomment the following lines if you want to use rapidjson for sending data too. Slow but more flexible.
         // Convert RapidJSON Document to string
         // rapidjson::StringBuffer buffer;
         // rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -81,13 +82,14 @@ public:
 
         if (ec) {
             std::cerr << "Send failed: " << ec.message() << std::endl;
-        } else {
-            std::cout << "Sent message: " << json_data << std::endl;
+        } //else {
+            //std::cout << "Sent message: " << json_data << std::endl;
             // std::cout << "Sent message: " << std::endl;
-        }
+        //}
     }
 
     void authenticate(){
+        ////If required to use json for sending data, a working example is shown below
         // rapidjson::Document json_data;
         // json_data.SetObject();
         // rapidjson::Document::AllocatorType& allocator = json_data.GetAllocator();
@@ -104,6 +106,7 @@ public:
 
         // // Add the "params" object to the main JSON object
         // json_data.AddMember("params", params, allocator);
+        
         std::string json_data = "{\"jsonrpc\":\"2.0\",\"id\":9929,\"method\":\"public/auth\",\"params\":{\"grant_type\":\"client_credentials\",\"client_id\":\"" + client_id + "\",\"client_secret\":\"" + client_secret + "\"}}";
         //send the json data
         send_json(json_data);
@@ -111,7 +114,7 @@ public:
 
     void place_order_buy(const std::string &inst_name, const std::string &mkt_type, const std::string &mkt_label, const std::string &amt, const std::string &extra_params = "") {
         
-        //If required to use json for sending data
+        ////If required to use json for sending data, a working example is shown below
         // Initialize JSON document and allocator
         // rapidjson::Document json_data;
         // json_data.SetObject();
@@ -178,6 +181,18 @@ public:
     void close() {
         ws_client.close(ws_hdl, websocketpp::close::status::normal, "Closing connection");
     }
+    /*
+    id: 9929: Authenticate
+    id: 9930: Place Buy Order
+    id: 9931: Place Sell Order
+    id: 9932: Cancel Order
+    id: 9933: Modify Order
+    id: 9934: Get Orderbook
+    id: 9935: View Instruments
+    id: 9936: Get Position
+    id: 9937: Subscribe Symbol
+    These ids can be used to identify the response messages and process them accordingly if required. Currently, the response messages are logged to a file named output.txt.
+    */
 
     void show_menu() {
     std::cout << "\nSelect an action:\n"
@@ -211,7 +226,7 @@ public:
                     std::getline(std::cin, mkt_label);
                     std::cout << "Enter amount: ";
                     std::getline(std::cin, amt);
-                    std::cout << "Enter extra parameters as comma-separated key-value pairs (optional): ";
+                    std::cout << "Enter extra parameters as comma-separated key-value pairs (optional): "; // example "time_in_force":"good_til_cancelled", "reduce_only":true
                     std::getline(std::cin, extra_params);
                     if(!extra_params.empty()) extra_params = "," + extra_params;
                     place_order_buy(inst_name, mkt_type, mkt_label, amt, extra_params);
@@ -302,8 +317,7 @@ public:
             }
 
         }
-
-
+        // Code to measure latency, last measured latency was 250 microseconds
         // //start time
         // auto start = std::chrono::high_resolution_clock::now();
         // place_order_buy(inst_name, mkt_type, mkt_label, amt);
