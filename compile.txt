@@ -1,0 +1,1 @@
+g++-13 -std=c++11 -I websocketpp -I /opt/homebrew/opt/boost/include -I /opt/homebrew/opt/rapidjson/include -I /opt/homebrew/opt/openssl@3/include -L/opt/homebrew/opt/openssl@3/lib -lssl -lcrypto -lpthread trade.cpp
